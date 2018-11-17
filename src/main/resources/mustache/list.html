@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of flows</title>
+
+    <script type="text/javascript" >
+        function send( type,path, data){
+          var xhr = new XMLHttpRequest();
+          xhr.open( type, path, true );
+          xhr.send( null );
+
+          xhr.onreadystatechange = function(){
+            if(this.readyState != 4 )return;
+            document.location.href = window.location.href;
+          }
+        }
+    </script>
+</head>
+<body>
+  <table id="process" border="0";>
+      {{#process}}
+      <tr>
+          <td>{{status}}</td>
+          <td><b>{{name}}</b></td>
+          <td>{{desc}}</td>
+          {{#isStarted}}
+          <td><button onclick="send('POST','/api/{{name}}/stop');">STOP</button></td>
+          {{/isStarted}}
+          {{#isStopped}}
+          <td><button onclick="send('POST','/api/{{name}}/start');">START</button></td>
+          {{/isStopped}}
+          <td><button onclick="send('POST','/api/{{name}}/delete2');">DELETE</button></td>
+      </tr>
+      {{/process}}
+  </table>
+</body>
+</html>
