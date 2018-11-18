@@ -1,6 +1,7 @@
 package org.simple.flex;
 
 import org.apache.camel.main.Main;
+import org.apache.camel.component.properties.PropertiesComponent;
 import org.simple.flex.beans.ManageRouteBean;
 import org.simple.flex.beans.TemplateBean;
 import org.simple.flex.flows.Rest;
@@ -16,15 +17,17 @@ public class MainApp {
     public static void main(String... args) throws Exception {
         Main main = new Main();
 
+        // Get properties
+        Config cfg = new Config();
+
         // Management of flows
         main.addRouteBuilder( new Rest() );
         main.bind( "templateBean", new TemplateBean( main.getOrCreateCamelContext(), main.getRouteBuilders()) );
         main.bind( "manageBean", new ManageRouteBean( main.getRouteBuilders() ) );
 
-
         // Load flows
         FlowLoadFactory flf = new FlowLoadFactory( new FlowRepository() );
-        flf.repo.add("~/Documents/PROJECTS/java/pure-test/target/flows/MyRouteBuilder.java");
+        flf.repo.add( (cfg.get("repository") + "/MyRouteBuilder.java"));
         flf.load( main );
 
 
