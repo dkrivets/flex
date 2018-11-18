@@ -18,7 +18,15 @@ public class MainApp {
         Main main = new Main();
 
         // Get properties
-        Config cfg = new Config();
+        Config cfg = new Config( args );
+
+        // Set to pproperties to flow/routes
+        main.bind("configProps", cfg.getProperties());
+        PropertiesComponent pc = main.getOrCreateCamelContext().getComponent("properties", PropertiesComponent.class);
+        pc.setInitialProperties( cfg.getProperties() );
+        main.setPropertyPlaceholderLocations("ref:configProps");
+        pc.setOverrideProperties( cfg.getProperties() );
+
 
         // Management of flows
         main.addRouteBuilder( new Rest() );
@@ -31,7 +39,8 @@ public class MainApp {
         flf.load( main );
 
 
-        main.run(args);
+        //main.run(args);
+        main.run();
 
     }
 

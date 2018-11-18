@@ -13,7 +13,8 @@ public class Rest extends Flow {
         // Rest configuration
         restConfiguration()
                 .component("restlet")
-                .host("localhost").port("8080")
+                //.host("localhost").port("8080")
+                .host("{{host}}").port("{{port}}")
                 .bindingMode(RestBindingMode.auto);
 
         // API commands
