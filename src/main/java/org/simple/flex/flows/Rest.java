@@ -14,11 +14,21 @@ public class Rest extends Flow {
         restConfiguration()
                 .component("restlet")
                 //.host("localhost").port("8080")
-                .host("{{host}}").port("{{port}}")
-                .bindingMode(RestBindingMode.auto);
+                .host("{{host}}")
+                .port("{{port}}")
+                .apiProperty("api.description", "Manage flex")
+                .apiProperty("api.title", "User API")
+                .apiProperty("api.version", "0.1")
+                .dataFormatProperty("prettyPrint", "true")
+                .enableCORS(true);
+                //.bindingMode(RestBindingMode.json);
 
         // API commands
         rest().path("/api")//.consumes("application/json").produces("application/json")
+                .consumes("application/json")
+                .produces("application/json")
+                .get("list")
+                .to("bean:manageBean?method=list()")
                 .post("/{id}/stop")
                 .to("bean:manageBean?method=stop(${header.id})")
                 .post("/{id}/start")
@@ -27,9 +37,12 @@ public class Rest extends Flow {
                 .to("bean:manageBean?method=delete(${header.id})");
 
 
+
         // Visualization
         // list of flows
-        rest().path("/").consumes("text/html").produces("text/html")
+        rest().path("/")
+                .consumes("text/plain")
+                .produces("text/plain")
                 .get("/list")
                 .to("bean:templateBean?method=run");
     }
