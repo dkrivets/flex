@@ -57,7 +57,7 @@ public class ManageRouteBean {
             result = "{'result': 'error', 'message': '" + ex.getMessage() + "' }";
         }
 
-        return result;
+        return result.replace("'","\"");
     }
 
     /**
@@ -116,5 +116,53 @@ public class ManageRouteBean {
         };
 
         return this.template( id, biConsumer );
+    }
+
+    /**
+     * Get status of RouteDefinition
+     *
+     * @param rb {RouteBuilder} Route
+     * @return
+     */
+    private org.apache.camel.ServiceStatus getStatus(RouteBuilder rb) {
+        RouteDefinition rd = rb.getRouteCollection().getRoutes().stream().findAny().orElse(null);
+
+        return rd != null ? rd.getStatus(rb.getContext()) : null;
+    }
+
+    public String list(){
+        String result = "";
+        String template = "{ 'result': 'done', 'data':[%s] }";
+        String temp_obj = "{ 'name': '%s', 'desc':'%s', 'status':'%s', 'isStarted':'%s', 'isStopped':'%s', 'isSuspended':'%s' },";
+
+
+        // Filtered list of routes
+        List<RouteBuilder> allRoutes = this.ctx.stream()
+                .collect( Collectors.toList() );
+
+        for (RouteBuilder item : allRoutes) {
+            String name =  item.getClass().getName().toString();
+            String desc = "";
+            try {
+                java.lang.reflect.Field field = item.getClass().getField("Description");
+                field.setAccessible(true);
+                desc = (field.get(item)).toString();
+            } catch (NoSuchFieldException e) {
+                desc = "";
+            } catch (IllegalAccessException e) {
+                desc = "";
+            }
+
+            String status      =  this.getStatus(item).name();
+            String is_started  =  String.valueOf( this.getStatus(item).isStarted() );
+            String is_stopped  =  String.valueOf( this.getStatus(item).isStopped() );
+            String is_susspend =  String.valueOf( this.getStatus(item).isSuspended() );
+
+            result = result + String.format( temp_obj, name, desc, status, is_started, is_stopped, is_susspend );
+        }
+
+        result = result.substring( 0, result.length()-1 );
+
+        return String.format( template, result ).replace("'","\"");
     }
 }
