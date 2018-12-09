@@ -41,8 +41,8 @@ public class Rest extends Flow {
         // Visualization
         // list of flows
         rest().path("/")
-                .consumes("text/plain")
-                .produces("text/plain")
+                .consumes("text/html")
+                .produces("text/html")
                 .get("/list")
                 .to("bean:templateBean?method=run");
     }
